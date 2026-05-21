@@ -1,33 +1,27 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/Saguaro-Biosciences/lembeddingscellprofileling/master/assets/schema_input.json",
-    "title": "Saguaro-Biosciences/lembeddingscellprofileling pipeline - params.input schema",
-    "description": "Schema for the file provided with params.input",
+    "$id": "https://raw.githubusercontent.com/YOUR_REPO/master/assets/schema_input.json",
+    "title": "Input samplesheet schema",
+    "description": "Schema for the input samplesheet CSV",
     "type": "array",
     "items": {
         "type": "object",
         "properties": {
-            "sample": {
-                "type": "string",
-                "pattern": "^\\S+$",
-                "errorMessage": "Sample name must be provided and cannot contain spaces",
-                "meta": ["id"]
+            "work_path": {
+                "type": "string"
             },
-            "fastq_1": {
-                "type": "string",
-                "format": "file-path",
-                "exists": true,
-                "pattern": "^([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
-                "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            "image_folder": {
+                "type": "string"
             },
-            "fastq_2": {
-                "type": "string",
-                "format": "file-path",
-                "exists": true,
-                "pattern": "^([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            "plate": {
+                "type": "string"
+            },
+            "time": {
+                "type": "string"
+            },
+            "single_cell": {
+                "type": ["string", "boolean"]
             }
         },
-        "required": ["sample", "fastq_1"]
-    }
-}
+        "required": ["work_path", "image_folder", "plate", "time"]
+    }}

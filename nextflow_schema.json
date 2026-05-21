@@ -20,7 +20,7 @@
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.csv$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 5 columns, and a header row.",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "outdir": {
@@ -28,6 +28,37 @@
                     "format": "directory-path",
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
+                }
+            }
+        },
+        "pipeline_options": {
+            "title": "Pipeline Custom Options",
+            "type": "object",
+            "fa_icon": "fas fa-cogs",
+            "description": "Specific parameters for the custom cell profiling workflow.",
+            "properties": {
+                "NAS_folder": {
+                    "type": "string",
+                    "default": "/mnt/ugreen_nas_v1/clientsdata",
+                    "description": "Base path for the NAS mount dynamically linked to Docker.",
+                    "fa_icon": "fas fa-hdd"
+                },
+                "cppipe_path": {
+                    "type": "string",
+                    "default": "IRIC/Image_Processing_Pipelines/2B.Illumination_Correction_CL2.0_IB.cppipe",
+                    "description": "Path to the CellProfiler pipeline (.cppipe) file.",
+                    "fa_icon": "fas fa-file-code"
+                },
+                "channels": {
+                    "type": "string",
+                    "default": "DNA Mito Cyto Alexa ER",
+                    "description": "Target channels for the QC and Embedding steps.",
+                    "fa_icon": "fas fa-vials"
+                },
+                "xgb_model_path": {
+                    "type": "string",
+                    "description": "Optional path to the XGBoost model for embedding extraction.",
+                    "fa_icon": "fas fa-project-diagram"
                 }
             }
         },
@@ -147,10 +178,12 @@
             "$ref": "#/$defs/input_output_options"
         },
         {
+            "$ref": "#/$defs/pipeline_options"
+        },
+        {
             "$ref": "#/$defs/institutional_config_options"
         },
         {
             "$ref": "#/$defs/generic_options"
         }
-    ]
-}
+    ]}

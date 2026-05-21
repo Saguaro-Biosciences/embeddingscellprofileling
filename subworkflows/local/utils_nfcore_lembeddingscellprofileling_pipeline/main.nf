@@ -85,22 +85,17 @@ workflow PIPELINE_INITIALISATION {
     //
 
     channel
-        .fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
-        .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
-        }
-        .groupTuple()
-        .map { samplesheet ->
-            validateInputSamplesheet(samplesheet)
-        }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
+        .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
+        .map { meta -> 
+            // 2. Extract your specific variables from the validated 'meta' map
+            // and package them exactly how your downstream processes expect them.
+            tuple(
+                meta.work_path, 
+                meta.image_folder, 
+                meta.plate, 
+                meta.time, 
+                meta.single_cell
+            )
         }
         .set { ch_samplesheet }
 
