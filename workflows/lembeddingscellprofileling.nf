@@ -37,6 +37,7 @@ workflow LEMBEDDINGSCELLPROFILELING {
     QC_MULT(CELLPROFILER_ILLUM.out)
 
     // 3. Run Image.csv annotation
+    // collection then flatting to force all QC_MULT to finish first
 
     QC_REPORT_ANNOT(QC_MULT.out)
 

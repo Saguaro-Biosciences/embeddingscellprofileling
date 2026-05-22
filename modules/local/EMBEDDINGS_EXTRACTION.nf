@@ -10,7 +10,7 @@ process EMBEDDINGS_EXTRACTION {
     
     script:
 
-    def single_cell_flag = (single_cell.toString().toLowerCase() == 'true' || single_cell.toString() == '1') ? '--single_cell' : ''
+    def single_cell_flag = (single_cell.toString().toLowerCase() == 'true' || single_cell.toString() == '1') ? '--single-cell' : ''
 
     def xgb_flag = params.xgb_model_path ? "--xgb-model-path ${params.xgb_model_path}" : ''
 
@@ -19,12 +19,11 @@ process EMBEDDINGS_EXTRACTION {
         --bucket-input "cellprofiler-resuts"\\
         --load-data-key "${work_path}/load_data_${plate}_${time}.csv"\\
         --data-base-path "${params.NAS_folder}/${image_folder}"\\
-        --csv-image-key "/mnt/s3_results/${work_path}/${plate}/${time}/Image.csv"\\
+        --csv-image-key "/mnt/s3_results/${work_path}/${plate}/${time}/"\\
         --channels ${params.channels}\\
         --num-consumers 4 ${single_cell_flag}\\
         --max-workers 16 ${xgb_flag}\\
         --save-coords\\
-        --xgb-model-path ${params.xgb_model_path}\\
         --out-data-path "s3://cellprofiler-resuts/${work_path}/embeddings_${plate}_${time}.parquet"
     """
 }

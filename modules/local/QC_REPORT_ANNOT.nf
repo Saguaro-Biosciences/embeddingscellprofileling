@@ -1,6 +1,7 @@
 process QC_REPORT_ANNOT {
     tag  "${work_path} - ${plate} - ${time}"
     conda "/home/dcmacho/miniconda3/envs/cell_analysis" 
+    maxForks 20
     
     // Publishes the HTML files to a folder in your pipeline's output directory
     publishDir { "${params.outdir}/qc_plots/${image_folder.tokenize('/')[-2]}/${plate}/${time}" } , mode: 'copy'
