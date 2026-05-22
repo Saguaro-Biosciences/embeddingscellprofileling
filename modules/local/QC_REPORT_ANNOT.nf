@@ -11,13 +11,13 @@ process QC_REPORT_ANNOT {
 
     output:
     // Pass the tuple along in case you add more steps, AND capture the HTML file
-    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell)
+    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell), emit: meta
     path "*.html", emit: html
 
     script:
     """
     python /home/dcmacho/cellpose-efficient-pipeline/image-processing-suite/qc_report_annotation.py \\
-        --path "${work_path}" \\
+        --work_path "${work_path}" \\
         --plate "${plate}" \\
         --time "${time}"
     """

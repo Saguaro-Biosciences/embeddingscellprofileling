@@ -1,6 +1,7 @@
 process CELLPROFILER_ILLUM {
     tag "${work_path} - ${plate} - ${time}"
-    container 'cellprofiler/cellprofiler:4.2.8'
+    container 'docker.io/cellprofiler/cellprofiler:4.2.8'
+    containerOptions '--entrypoint ""'
     maxForks 4
 
     input:
@@ -11,9 +12,6 @@ process CELLPROFILER_ILLUM {
 
     script:
     """
-    cellprofiler -c -r \\
-        -p /mnt/s3out/${params.cppipe_path} \\
-        -o /mnt/s3out/${work_path}/${plate}/${time} \\
-        --data-file /mnt/s3out/${work_path}/load_data_${plate}_${time}.csv
+    cellprofiler -c -r -p "/mnt/s3out/${params.cppipe_path}" -o "/mnt/s3out/${work_path}/${plate}/${time}" --data-file "/mnt/s3out/${work_path}/load_data_${plate}_${time}.csv"
     """
 }

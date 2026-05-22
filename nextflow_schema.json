@@ -40,24 +40,29 @@
                 "NAS_folder": {
                     "type": "string",
                     "default": "/mnt/ugreen_nas_v1/clientsdata",
-                    "description": "Base path for the NAS mount dynamically linked to Docker.",
+                    "description": "Base path for the NAS mount dynamically linked to Docker. Containing the first level of folder.",
                     "fa_icon": "fas fa-hdd"
                 },
                 "cppipe_path": {
                     "type": "string",
                     "default": "IRIC/Image_Processing_Pipelines/2B.Illumination_Correction_CL2.0_IB.cppipe",
-                    "description": "Path to the CellProfiler pipeline (.cppipe) file.",
+                    "description": "Path to the CellProfiler pipeline (.cppipe) file, from the IRIC folder in cellprofiler-resuts bucket.",
                     "fa_icon": "fas fa-file-code"
                 },
                 "channels": {
                     "type": "string",
                     "default": "DNA Mito Cyto Alexa ER",
-                    "description": "Target channels for the QC and Embedding steps.",
+                    "description": "Target channels for the QC and Embedding steps. In order of importance. First 3 are used for segmentation.",
                     "fa_icon": "fas fa-vials"
                 },
                 "xgb_model_path": {
                     "type": "string",
-                    "description": "Optional path to the XGBoost model for embedding extraction.",
+                    "description": "Optional path to the XGBoost model for death cell classification.",
+                    "fa_icon": "fas fa-project-diagram"
+                },
+                "outdir": {
+                    "type": "string",
+                    "description": "Path to images sinde the server.",
                     "fa_icon": "fas fa-project-diagram"
                 }
             }

@@ -37,7 +37,7 @@ workflow SAGUAROBIOSCIENCES_LEMBEDDINGSCELLPROFILELING {
     //
     LEMBEDDINGSCELLPROFILELING (
         samplesheet,
-        params.outdir,
+        params.outdir
     )
 }
 /*

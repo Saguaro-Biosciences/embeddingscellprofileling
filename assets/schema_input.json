@@ -23,7 +23,7 @@
                 "help_text": "Used to route the CellProfiler outputs and plot titles."
             },
             "time": {
-                "type": "string",
+                "type": "integer",
                 "description": "Timepoint identifier (e.g., 6, 12, 24).",
                 "help_text": "Represents the hour of the scan."
             },

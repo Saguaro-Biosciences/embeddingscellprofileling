@@ -42,7 +42,7 @@ workflow LEMBEDDINGSCELLPROFILELING {
 
     // 4. Run embedding extraction
 
-    EMBEDDINGS_EXTRACTION(QC_REPORT_ANNOT.out)
+    EMBEDDINGS_EXTRACTION(QC_REPORT_ANNOT.out.meta)
 
     // 5. DMSO outlier detection, Embedding Normalization, PCA and bioactivity. 
 

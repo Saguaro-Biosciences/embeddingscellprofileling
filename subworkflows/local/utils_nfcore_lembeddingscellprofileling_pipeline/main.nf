@@ -86,16 +86,8 @@ workflow PIPELINE_INITIALISATION {
 
     channel
         .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .map { meta -> 
-            // 2. Extract your specific variables from the validated 'meta' map
-            // and package them exactly how your downstream processes expect them.
-            tuple(
-                meta.work_path, 
-                meta.image_folder, 
-                meta.plate, 
-                meta.time, 
-                meta.single_cell
-            )
+        .map { work_path, image_folder, plate, time, single_cell -> 
+            tuple(work_path, image_folder, plate, time, single_cell)
         }
         .set { ch_samplesheet }
 
