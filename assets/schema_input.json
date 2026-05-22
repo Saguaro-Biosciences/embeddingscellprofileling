@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/YOUR_REPO/master/assets/schema_input.json",
+    "$id": "https://raw.githubusercontent.com/Saguaro-Biosciences/lembeddingscellprofileling/master/assets/schema_input.json",
     "title": "Input samplesheet schema",
     "description": "Schema for the input samplesheet CSV",
     "type": "array",
@@ -8,20 +8,31 @@
         "type": "object",
         "properties": {
             "work_path": {
-                "type": "string"
+                "type": "string",
+                "description": "Path to the working folder in the cellprofiller-resuts bucket. Ex (IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset1_10uM_Run01/)",
+                "help_text": "This is used dynamically to determine where the container mounts and where the final HTML/CSV files are saved."
             },
             "image_folder": {
-                "type": "string"
+                "type": "string",
+                "description": "Path to the full Image folder of the given plate timepoint from the /mnt/ugreen_nas_v(1,2 or 3)/folder. Ex (arctoris/Saguaro_Live Cell Paint/MISN.008_LiveCP_HEPG2_DAPI__2026-02-07T20_33_37-Measurement 7/Images) ",
+                "help_text": "Must match the exact directory name where the raw TIFFs/PNGs are stored."
             },
             "plate": {
-                "type": "string"
+                "type": "string",
+                "description": "Plate identifier (e.g., P01, P02).",
+                "help_text": "Used to route the CellProfiler outputs and plot titles."
             },
             "time": {
-                "type": "string"
+                "type": "string",
+                "description": "Timepoint identifier (e.g., 6, 12, 24).",
+                "help_text": "Represents the hour of the scan."
             },
             "single_cell": {
-                "type": ["string", "boolean"]
+                "type": ["string", "boolean"],
+                "description": "Flag to enable single-cell embedding extraction.",
+                "help_text": "Set to 'true' or '1' to pass the --single_cell flag into the GPU Cellpose script."
             }
         },
         "required": ["work_path", "image_folder", "plate", "time"]
-    }}
+    }
+}

@@ -3,7 +3,7 @@ process QC_REPORT_ANNOT {
     conda "/home/dcmacho/miniconda3/envs/cell_analysis" 
     
     // Publishes the HTML files to a folder in your pipeline's output directory
-    publishDir "${params.outdir}/qc_plots/${image_folder.tokenize('/')[-2]}/${plate}/${time}/", mode: 'copy'
+    publishDir { "${params.outdir}/qc_plots/${image_folder.tokenize('/')[-2]}/${plate}/${time}" } , mode: 'copy'
 
     input:
     // Receives the tuple from the previous step
