@@ -13,6 +13,7 @@ process QC_MULT {
     script:
 
     """
+    sudo systemctl restart autofs
     python /home/dcmacho/cellpose-efficient-pipeline/image-processing-suite/Illumination_QC_mult.py \\
         --load-data "/mnt/s3_results/${work_path}/load_data_${plate}_${time}.csv" \\
         --data-path "${params.NAS_folder}/${image_folder}" \\

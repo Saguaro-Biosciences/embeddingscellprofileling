@@ -15,6 +15,7 @@ process EMBEDDINGS_EXTRACTION {
     def xgb_flag = params.xgb_model_path ? "--xgb-model-path ${params.xgb_model_path}" : ''
 
     """
+    sudo systemctl restart autofs
     python /home/dcmacho/cellpose-efficient-pipeline/image-processing-suite/Cellpose_GPU_s3fs.py \\
         --bucket-input "cellprofiler-resuts"\\
         --load-data-key "${work_path}/load_data_${plate}_${time}.csv"\\

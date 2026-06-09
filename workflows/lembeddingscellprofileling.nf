@@ -34,8 +34,8 @@ workflow LEMBEDDINGSCELLPROFILELING {
 
     // 2. Run QC metrics
 
-    QC_MULT(CELLPROFILER_ILLUM.out)
-
+    QC_MULT(CELLPROFILER_ILLUM.out.collect().flatten().collate(5))
+    
     // 3. Run Image.csv annotation
     // collection then flatting to force all QC_MULT to finish first
 
@@ -43,7 +43,7 @@ workflow LEMBEDDINGSCELLPROFILELING {
 
     // 4. Run embedding extraction
 
-    EMBEDDINGS_EXTRACTION(QC_REPORT_ANNOT.out.meta)
+    EMBEDDINGS_EXTRACTION(QC_REPORT_ANNOT.out.meta.collect().flatten().collate(5))
 
     // 5. DMSO outlier detection, Embedding Normalization, PCA and bioactivity. 
 
