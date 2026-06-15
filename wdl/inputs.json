@@ -1,0 +1,16 @@
+{
+  "lembeddingscellprofileling.samplesheet": "assets/samplesheet.csv",
+
+  "lembeddingscellprofileling.nas_folder": "/mnt/ugreen_nas_v1/clientsdata",
+  "lembeddingscellprofileling.cppipe_path": "IRIC/Image_Processing_Pipelines/2B.Illumination_Correction_CL2.0_IB.cppipe",
+  "lembeddingscellprofileling.channels": "DNA CL640 CL488R CL488Y",
+
+  "_comment_xgb": "Uncomment to enable the XGBoost model flag",
+  "_lembeddingscellprofileling.xgb_model_path": "/path/to/xgb_model.json",
+
+  "_comment_host": "Verify these match your machine (mirrors the Nextflow conda directive / host script paths)",
+  "lembeddingscellprofileling.conda_sh": "/home/dcmacho/miniconda3/etc/profile.d/conda.sh",
+  "lembeddingscellprofileling.conda_env": "/home/dcmacho/miniconda3/envs/cell_analysis",
+  "lembeddingscellprofileling.script_dir": "/home/dcmacho/cellpose-efficient-pipeline/image-processing-suite",
+  "lembeddingscellprofileling.cellprofiler_container": "docker.io/cellprofiler/cellprofiler:4.2.8"
+}
