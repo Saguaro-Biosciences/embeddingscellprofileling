@@ -5,10 +5,10 @@ process CELLPROFILER_ILLUM {
     maxForks 4
 
     input:
-    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell)
+    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell), val(network), val(channels)
 
     output:
-    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell)
+    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell), val(network), val(channels)
 
     script:
     """

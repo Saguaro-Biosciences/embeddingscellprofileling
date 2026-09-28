@@ -23,16 +23,42 @@
                 "help_text": "Used to route the CellProfiler outputs and plot titles."
             },
             "time": {
-                "type": ["string", "integer"],
+                "type": [
+                    "string",
+                    "integer"
+                ],
                 "description": "Timepoint identifier (e.g., 6, 12, 24).",
                 "help_text": "Represents the hour of the scan."
             },
             "single_cell": {
-                "type": ["string", "boolean"],
+                "type": [
+                    "string",
+                    "boolean",
+                    "integer"
+                ],
                 "description": "Flag to enable single-cell embedding extraction.",
                 "help_text": "Set to 'true' or '1' to pass the --single_cell flag into the GPU Cellpose script."
+            },
+            "network_analysis": {
+                "type": [
+                    "string",
+                    "boolean",
+                    "integer"
+                ],
+                "description": "Route this plate/timepoint to the neuron axon-network embedding extractor (Cellpose_GPU_s3fs_soma_netork.py).",
+                "help_text": "Set to 'true' or '1' for iPSC-neuron plates. Adds soma-subtracted network metrics and embeddings on --network_channels. Empty/false uses the standard extractor."
+            },
+            "channels": {
+                "type": "string",
+                "description": "Optional space-separated channel list for this row, overriding --channels (e.g. 'DNA ER CL488R CL488Y CL561').",
+                "help_text": "Use when one samplesheet mixes assays with different channel sets (e.g. U2OS and neuron plates). Order matters: the first 3 are used for segmentation."
             }
         },
-        "required": ["work_path", "image_folder", "plate", "time"]
+        "required": [
+            "work_path",
+            "image_folder",
+            "plate",
+            "time"
+        ]
     }
 }

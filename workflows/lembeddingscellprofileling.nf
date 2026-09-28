@@ -9,6 +9,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_lemb
 include { CELLPROFILER_ILLUM } from '../modules/local/CELLPROFILER_ILLUM.nf'
 include { QC_MULT } from '../modules/local/QC_MULT.nf'
 include { EMBEDDINGS_EXTRACTION } from '../modules/local/EMBEDDINGS_EXTRACTION.nf'
+include { EMBEDDINGS_EXTRACTION_NETWORK } from '../modules/local/EMBEDDINGS_EXTRACTION_NETWORK.nf'
 include { QC_REPORT_ANNOT } from '../modules/local/QC_REPORT_ANNOT.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,7 +35,8 @@ workflow LEMBEDDINGSCELLPROFILELING {
 
     // 2. Run QC metrics
 
-    QC_MULT(CELLPROFILER_ILLUM.out.collect().flatten().collate(5))
+    // collect(flat: false) keeps each row intact (flatten would drop empty optional columns)
+    QC_MULT(CELLPROFILER_ILLUM.out.collect(flat: false).flatMap { it })
     
     // 3. Run Image.csv annotation
     // collection then flatting to force all QC_MULT to finish first
@@ -43,7 +45,24 @@ workflow LEMBEDDINGSCELLPROFILELING {
 
     // 4. Run embedding extraction
 
-    EMBEDDINGS_EXTRACTION(QC_REPORT_ANNOT.out.meta.collect().flatten().collate(5))
+    // Rows flagged network_analysis (neurons) go to the soma/network extractor
+
+    def ch_embed = QC_REPORT_ANNOT.out.meta
+        .collect(flat: false)
+        .flatMap { it }
+        .branch { row ->
+            network: row[5]
+            standard: true
+        }
+
+    EMBEDDINGS_EXTRACTION(ch_embed.standard)
+
+    // Both extractors share the GPUs, so network rows start only once the standard ones finish.
+    // toList() still emits (an empty list) when there were no standard rows.
+
+    def ch_standard_done = EMBEDDINGS_EXTRACTION.out.toList().map { 'done' }
+
+    EMBEDDINGS_EXTRACTION_NETWORK(ch_embed.network.combine(ch_standard_done).map { row -> row[0..-2] })
 
     // 5. DMSO outlier detection, Embedding Normalization, PCA and bioactivity. 
 

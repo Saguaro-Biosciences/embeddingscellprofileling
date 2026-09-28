@@ -38,9 +38,9 @@ First, prepare a samplesheet describing the data you want to process. Each **row
 `samplesheet.csv`:
 
 ```csv
-work_path,image_folder,plate,time,single_cell
-IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01,Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01/20250820T160354_6h_P15/Image,P15,6,TRUE
-IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01,Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01/20250820T220625_12h_P15/Image,P15,12,FALSE
+work_path,image_folder,plate,time,single_cell,network_analysis,channels
+IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01,Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01/20250820T160354_6h_P15/Image,P15,6,TRUE,FALSE,
+IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01,Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01/20250820T220625_12h_P15/Image,P15,12,FALSE,FALSE,
 ```
 
 | Column         | Required | Description                                                                                                                                      |
@@ -50,20 +50,36 @@ IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01,Phenotypic_screen_H
 | `plate`        | Yes      | Plate identifier (e.g. `P15`). Used to route outputs and label reports.                                                                           |
 | `time`         | Yes      | Acquisition timepoint in hours (e.g. `6`, `12`, `24`).                                                                                            |
 | `single_cell`  | No       | `TRUE`/`1` to enable single-cell embedding extraction; otherwise `FALSE` (default).                                                              |
+| `network_analysis` | No   | `TRUE`/`1` for neuron plates: routes the row to `Cellpose_GPU_s3fs_soma_netork.py`, adding soma-subtracted axon-network metrics and embeddings on `--network_channels` (default `ER CL488Y CL488R CL561`). Otherwise the standard extractor is used. |
+| `channels`     | No       | Space-separated channel list for this row, overriding `--channels` (e.g. `DNA ER CL488R CL488Y CL561`). Needed when a samplesheet mixes assays; `--network_channels` must be a subset of it. |
 
 > [!NOTE]
 > Paths are interpreted relative to the storage locations configured for the pipeline (the shared image store for `image_folder`, the results store for `work_path`). See [`assets/schema_input.json`](assets/schema_input.json) for the authoritative column definitions and [`assets/samplesheet.csv`](assets/samplesheet.csv) for a complete example.
 
 Now, you can run the pipeline using:
 
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
-
 ```bash
 nextflow run Saguaro-Biosciences/lembeddingscellprofileling \
-   -profile <docker/singularity/.../institute> \
+   -profile docker \
    --input samplesheet.csv \
    --outdir <OUTDIR>
 ```
+
+### Containers
+
+All steps run in containers, so the only host requirements are Nextflow, Docker (or Apptainer/Singularity), and the data mounts:
+
+- CellProfiler: `docker.io/cellprofiler/cellprofiler:4.2.8`
+- Python steps: `ghcr.io/saguaro-biosciences/lembeddingscellprofileling:<version>`, built from [`docker/Dockerfile`](docker/Dockerfile) by the `Build pipeline container` GitHub Action. Cellpose (`cpsam`) and EfficientNetV2 weights are baked in, so it runs offline. The scripts themselves live in [`bin/`](bin/) and ship with the pipeline, so changing a script does not require rebuilding the image.
+
+Host requirements:
+
+- `--NAS_folder` (image store) and `--s3_results_mount` (s3fs mount of `cellprofiler-resuts`, mounted with `-o allow_other`) must be mounted on the host. They are bind-mounted into the containers.
+- AWS credentials come from `~/.aws` (Docker) or the `AWS_*` environment variables.
+- The embedding steps request the GPUs (`--gpus all` for Docker, `--nv` for Apptainer). Docker needs the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html). Use `--use_gpu false` to run on CPU (very slow).
+- The GHCR package is private: run `docker login ghcr.io` first (a GitHub token with `read:packages`).
+
+`-profile conda` still runs everything on the host using `--conda_env`.
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).

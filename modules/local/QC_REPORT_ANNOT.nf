@@ -1,6 +1,7 @@
 process QC_REPORT_ANNOT {
     tag  "${work_path} - ${plate} - ${time}"
-    conda "/home/dcmacho/miniconda3/envs/cell_analysis" 
+    container "${params.pipeline_container}"
+    conda "${params.conda_env}"
     maxForks 20
     
     // Publishes the HTML files to a folder in your pipeline's output directory
@@ -8,16 +9,16 @@ process QC_REPORT_ANNOT {
 
     input:
     // Receives the tuple from the previous step
-    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell)
+    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell), val(network), val(channels)
 
     output:
     // Pass the tuple along in case you add more steps, AND capture the HTML file
-    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell), emit: meta
+    tuple val(work_path),val(image_folder), val(plate), val(time),val(single_cell), val(network), val(channels), emit: meta
     path "*.html", emit: html
 
     script:
     """
-    python /home/dcmacho/cellpose-efficient-pipeline/image-processing-suite/qc_report_annotation.py \\
+    qc_report_annotation.py \\
         --work_path "${work_path}" \\
         --plate "${plate}" \\
         --time "${time}"

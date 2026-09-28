@@ -86,8 +86,17 @@ workflow PIPELINE_INITIALISATION {
 
     channel
         .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .map { work_path, image_folder, plate, time, single_cell -> 
-            tuple(work_path, image_folder, plate, time, single_cell)
+        .map { work_path, image_folder, plate, time, single_cell, network_analysis, channels ->
+            // Optional columns come back as [] when empty
+            def network      = network_analysis.toString().toLowerCase() in ['true', '1']
+            def row_channels = channels ?: params.channels
+            if (network) {
+                def missing = params.network_channels.tokenize() - row_channels.tokenize()
+                if (missing) {
+                    error("Samplesheet row ${plate}/${time}: --network_channels ${missing} not in channels '${row_channels}'")
+                }
+            }
+            tuple(work_path, image_folder, plate, time, single_cell, network, row_channels)
         }
         .set { ch_samplesheet }
 

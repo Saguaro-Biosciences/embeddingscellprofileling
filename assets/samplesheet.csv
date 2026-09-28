@@ -1,3 +1,3 @@
-work_path,image_folder,plate,time,single_cell
-IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01,Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01/20250820T160354_6h_P15/Image,P15,6,TRUE
-IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01,Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01/20250820T220625_12h_P15/Image,P15,12,FALSE
+work_path,image_folder,plate,time,single_cell,network_analysis,channels
+IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01,Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01/20250820T160354_6h_P15/Image,P15,6,TRUE,FALSE,
+IRIC/Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01,Phenotypic_screen_HY-L022-custom_U2OS/Subset3_1uM_Run01/20250820T220625_12h_P15/Image,P15,12,FALSE,FALSE,

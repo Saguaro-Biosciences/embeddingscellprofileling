@@ -1,0 +1,32 @@
+# Pinned to the versions of the working `cell_analysis` conda env on Saguaro-P620.
+# torch 2.5.1 / torchvision 0.20.1 (CUDA 12.1) come from the base image.
+cellpose==4.0.6
+transformers==4.56.2
+timm==1.0.20
+huggingface-hub==0.35.3
+safetensors==0.6.2
+tokenizers==0.22.1
+xgboost==3.2.0
+numpy==2.0.1
+pandas==2.3.3
+scipy==1.15.3
+scikit-image==0.25.2
+scikit-learn==1.7.2
+fastremap==1.17.7
+numba==0.64.0
+llvmlite==0.46.0
+tifffile==2025.5.10
+imagecodecs==2025.3.30
+roifile==2025.5.10
+natsort==8.4.0
+opencv-python-headless==4.12.0.88
+segment-anything==1.0
+pillow==11.3.0
+pyarrow==21.0.0
+fsspec==2025.9.0
+s3fs==2025.9.0
+aiobotocore==2.24.2
+boto3==1.40.18
+botocore==1.40.18
+plotly==6.7.0
+tqdm==4.67.1
