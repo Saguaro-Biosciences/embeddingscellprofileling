@@ -19,6 +19,8 @@ process EMBEDDINGS_EXTRACTION_NETWORK {
 
     def xgb_flag = params.xgb_model_path ? "--xgb-model-path ${params.xgb_model_path}" : ''
 
+    def min_size_flag = params.min_size_filter ? "--min-size-filter ${params.min_size_filter}" : ''
+
     """
     ${params.restart_autofs ? 'sudo systemctl restart autofs' : ''}
     Cellpose_GPU_s3fs_soma_netork.py \\
@@ -28,7 +30,7 @@ process EMBEDDINGS_EXTRACTION_NETWORK {
         --csv-image-key "${params.s3_results_mount}/${work_path}/${plate}/${time}/"\\
         --channels ${channels}\\
         --num-consumers 4 ${single_cell_flag}\\
-        --max-workers 16 ${xgb_flag}\\
+        --max-workers 16 ${xgb_flag} ${min_size_flag}\\
         --save-coords\\
         --network-metrics \\
         --network-embeddings \\

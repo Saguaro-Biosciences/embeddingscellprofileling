@@ -76,12 +76,13 @@
                 },
                 "network_metric_set": {
                     "type": "string",
-                    "default": "full",
+                    "default": "skeleton",
                     "enum": [
+                        "skeleton",
                         "full",
                         "distribution"
                     ],
-                    "description": "Network metric definitions: 'full' (16 log2-ratio bins + shape + ridge + morphology) or 'distribution' (16 bins + 4 occupancy).",
+                    "description": "Network metric definitions: 'skeleton' (default: 16 log2-ratio bins + shape + morphology), 'full' (skeleton + Sato ridge features, ~3x slower) or 'distribution' (16 bins + 4 occupancy). Connectivity statistics are always added.",
                     "fa_icon": "fas fa-chart-bar"
                 },
                 "pipeline_container": {
@@ -113,6 +114,11 @@
                     "default": false,
                     "description": "Legacy host-only workaround: run 'sudo systemctl restart autofs' before QC/embedding tasks. Does not work inside containers.",
                     "fa_icon": "fas fa-redo"
+                },
+                "min_size_filter": {
+                    "type": "integer",
+                    "description": "Drop Cellpose objects smaller than this (px) before the DNA-contrast filter. Only used by the network extractor (network_analysis=true rows).",
+                    "fa_icon": "fas fa-filter"
                 }
             }
         },

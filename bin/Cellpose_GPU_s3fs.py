@@ -332,13 +332,28 @@ def main(args):
         for p in producers: p.start() 
         
         # --- Monitor --- 
-        for p in producers: p.join() 
+        # A worker killed from outside (e.g. by the OOM killer) never reports back: the other
+        # workers block on the queues and this process would wait forever. Fail instead.
+        def abort_if_worker_died():
+            dead = [(w.name, w.exitcode) for w in producers + consumers if not w.is_alive() and w.exitcode != 0]
+            if dead:
+                logging.error(f"Worker(s) died unexpectedly {dead} (exit -9 = killed, usually out of memory). Aborting.")
+                for proc in producers + consumers:
+                    if proc.is_alive(): proc.terminate()
+                # os._exit: a normal exit would block flushing queues whose readers are gone
+                logging.shutdown()
+                os._exit(1)
+
+        while any(p.is_alive() for p in producers):
+            abort_if_worker_died()
+            time.sleep(2)
         logging.info("All producers have finished. Waiting for consumers...") 
         
         pbar = tqdm(total=num_tasks, desc="Overall Progress") 
         last_processed_count = 0 
         
         while len(results_dict) < num_tasks: 
+            abort_if_worker_died()
             current_processed_count = len(results_dict) 
             pbar.update(current_processed_count - last_processed_count) 
             last_processed_count = current_processed_count 
