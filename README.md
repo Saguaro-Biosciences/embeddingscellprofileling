@@ -18,6 +18,7 @@ The pipeline is designed for scale. Each plate and timepoint is processed indepe
 
 At a high level, the workflow proceeds through the following stages:
 
+- **Load data creation** — builds the CellProfiler load_data file for each plate and timepoint straight from the microscope's image folder, and checks that every image is complete and readable before any processing starts.
 - **Image standardisation** — corrects systematic acquisition artefacts so that measurements are comparable across fields, wells, and plates.
 - **Quality control** — computes image- and acquisition-level quality metrics and flags problematic data early.
 - **Quality reporting** — produces human-readable reports that summarise the condition of each plate and timepoint for review.
@@ -64,6 +65,21 @@ nextflow run Saguaro-Biosciences/lembeddingscellprofileling \
    --input samplesheet.csv \
    --outdir <OUTDIR>
 ```
+
+The first step builds each row's CellProfiler load_data file from its CQ1 `Image` folder, so you no longer need to make it by hand. Tell it which CQ1 channel number holds which channel, using the names in your `--cppipe_path`:
+
+```bash
+nextflow run Saguaro-Biosciences/lembeddingscellprofileling \
+   -profile docker \
+   --input samplesheet.csv \
+   --outdir <OUTDIR> \
+   --NAS_folder /mnt/ugreen_nas_v3/iric \
+   --cppipe_path IRIC/Image_Processing_Pipelines/Illumination_Correction_CellPainting.cppipe \
+   --channels 'DNA Mito Cyto Alexa ER' \
+   --channel_map 'Mito=C1 Alexa=C2 Cyto=C3 ER=C4 DNA=C5'
+```
+
+A load_data file that already exists in the results bucket is reused, unless you pass `--overwrite_load_data`. The step stops before CellProfiler runs if a transfer is unfinished, a field is missing a channel, or images are unreadable. See [Creating load_data files](docs/usage.md#creating-load_data-files) for the details and [the samplesheet section](docs/usage.md#samplesheet-input) for a full example with a `params.yml`.
 
 ### Containers
 

@@ -8,47 +8,65 @@
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+Pass the samplesheet with `--input`. It is a comma-separated file with a header row. Each row is one plate at one timepoint, and rows are processed independently and in parallel.
 
 ```bash
 --input '[path to samplesheet file]'
 ```
 
-### Multiple runs of the same sample
+### Columns
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will concatenate the raw reads before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
+| Column             | Required | Description                                                                                                                                      |
+| ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `work_path`        | Yes      | Folder in the `cellprofiler-resuts` bucket for this run, e.g. `IRIC/AF_test_YKG-CQ1_Vs_ONX-CQ1_comparison`. All outputs for the row go under it. |
+| `image_folder`     | Yes      | Path of the CQ1 `Image` folder relative to `--NAS_folder`, ending in `/Image`. One plate at one timepoint.                                       |
+| `plate`            | Yes      | Plate identifier, e.g. `P01` or `YKG-CQ1`. Used in file names and report titles.                                                                 |
+| `time`             | Yes      | Timepoint in hours, e.g. `6` or `48`. Set it even for a single-timepoint plate.                                                                  |
+| `single_cell`      | No       | `TRUE` or `1` to also write single-cell embeddings. Default `FALSE`.                                                                             |
+| `network_analysis` | No       | `TRUE` or `1` for neuron plates, which use the soma and axon-network extractor on `--network_channels`.                                          |
+| `channels`         | No       | Space-separated channel list for this row, overriding `--channels`. The first three are used for segmentation.                                   |
 
-```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
+[`assets/schema_input.json`](../assets/schema_input.json) holds the authoritative column definitions.
+
+### Where each row reads and writes
+
+| For each row                                         | Location                                                                                                      |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Raw images read                                      | `<NAS_folder>/<image_folder>`                                                                                 |
+| load_data CSV, created or reused                     | `s3://cellprofiler-resuts/<work_path>/load_data_<plate>_<time>.csv`                                           |
+| Illumination functions and `Image.csv` with QC flags | `s3://cellprofiler-resuts/<work_path>/<plate>/<time>/`                                                        |
+| Embeddings                                           | `s3://cellprofiler-resuts/<work_path>/embeddings_<plate>_<time>_*`                                            |
+| QC plots                                             | `<outdir>/qc_plots/<acquisition folder>/<plate>/<time>/`, e.g. `qc_plots/20261014T154315_YKG-CQ1/YKG-CQ1/48/` |
+| Copy of each load_data file this run wrote           | `<outdir>/load_data/<work_path>/`                                                                             |
+
+### Example: a Cell Painting plate imaged on the CQ1
+
+`samplesheet.csv`, one acquisition per row:
+
+```csv
+work_path,image_folder,plate,time,single_cell,network_analysis,channels
+IRIC/AF_test_YKG-CQ1_Vs_ONX-CQ1_comparison,AF_test_YKG-CQ1_Vs_ONX-CQ1_comparison/20261014T154315_YKG-CQ1/Image,YKG-CQ1,48,False,False,
+IRIC/AF_test_YKG-CQ1_Vs_ONX-CQ1_comparison,AF_test_YKG-CQ1_Vs_ONX-CQ1_comparison/20261014T125603_ONX-CQ1/Image,ONX-CQ1,48,False,False,
 ```
 
-### Full samplesheet
+`params.yml`:
 
-The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 3 columns to match those defined in the table below.
-
-A final samplesheet file consisting of both single- and paired-end data may look something like the one below. This is for 6 samples, where `TREATMENT_REP3` has been sequenced twice.
-
-```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
-CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
-TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
-TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
+```yaml
+input: samplesheet.csv
+outdir: results
+NAS_folder: /mnt/ugreen_nas_v3/iric
+cppipe_path: IRIC/Image_Processing_Pipelines/Illumination_Correction_CellPainting.cppipe
+channels: DNA Mito Cyto Alexa ER
+channel_map: Mito=C1 Alexa=C2 Cyto=C3 ER=C4 DNA=C5
 ```
 
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
-| `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
-| `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
+Run it from a folder of its own, e.g. `~/pipelines/runs/<run name>/`, so its `work/` and `results/` stay together:
 
-An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
+```bash
+nextflow run ~/pipelines/Saguaro-Biosciences-lembeddingscellprofileling -profile docker -params-file params.yml
+```
+
+`--channel_map` applies to every row. Rows whose load_data file already exists ignore it, but rows that need a new file must share one channel layout; run assays with different layouts as separate runs.
 
 ## Creating load_data files
 
