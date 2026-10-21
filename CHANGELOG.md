@@ -9,6 +9,8 @@ Initial release of Saguaro-Biosciences/lembeddingscellprofileling, created with 
 
 ### `Added`
 
+- `LOAD_DATA` module (`bin/make_load_data.py`): builds the CellProfiler load_data CSV for each samplesheet row from its CQ1 Image folder before `CELLPROFILER_ILLUM` runs. New parameters `--make_load_data`, `--channel_map`, `--overwrite_load_data` and `--plate_columns`. Existing load_data files are kept unless `--overwrite_load_data`.
+
 ### `Fixed`
 
 ### `Dependencies`

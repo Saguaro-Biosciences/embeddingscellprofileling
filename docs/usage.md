@@ -50,6 +50,27 @@ TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
+## Creating load_data files
+
+The first step, `LOAD_DATA`, writes `s3://cellprofiler-resuts/<work_path>/load_data_<plate>_<time>.csv` for each samplesheet row by scanning the CQ1 `Image` folder at `<NAS_folder>/<image_folder>`. A load_data file that already exists is left unchanged, so samplesheets with hand-made files keep working.
+
+Tell the step which CQ1 channel number (`C<n>` in the file names) holds which channel. The names must match the ones in `--cppipe_path`, and every name in `--channels` must be mapped. For the PhenoVue Cell Painting set used with `Illumination_Correction_CellPainting.cppipe`:
+
+```bash
+--channel_map 'Mito=C1 Alexa=C2 Cyto=C3 ER=C4 DNA=C5' --channels 'DNA Mito Cyto Alexa ER'
+```
+
+Well names come from the CQ1 plate file `MP_*_<cols>x<rows>.xml` next to the `Image` folder; use `--plate_columns` if it is missing. The step stops with an error, before CellProfiler starts, when the folder holds unfinished `*.partial` transfers, a field is missing a mapped channel, there is more than one timepoint or z-plane, or images are unreadable (the UGREEN NAS mode-000 problem; fix with `chmod -R a+rX` on the run folder).
+
+| Parameter               | Default  | Purpose                                              |
+| ----------------------- | -------- | ---------------------------------------------------- |
+| `--make_load_data`      | `true`   | Run the step; `false` skips it entirely              |
+| `--channel_map`         | none     | Channel name to CQ1 channel number                   |
+| `--overwrite_load_data` | `false`  | Replace load_data files that already exist           |
+| `--plate_columns`       | from XML | Plate columns used to turn W indices into well names |
+
+Each file the run writes is also copied to `<outdir>/load_data/<work_path>/`.
+
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:

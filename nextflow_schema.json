@@ -119,6 +119,31 @@
                     "type": "integer",
                     "description": "Drop Cellpose objects smaller than this (px) before the DNA-contrast filter. Only used by the network extractor (network_analysis=true rows).",
                     "fa_icon": "fas fa-filter"
+                },
+                "make_load_data": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Build missing load_data CSVs from the CQ1 Image folders before CellProfiler runs.",
+                    "help_text": "Existing load_data files are left unchanged unless --overwrite_load_data is set. Set to false to skip the LOAD_DATA step entirely.",
+                    "fa_icon": "fas fa-file-csv"
+                },
+                "channel_map": {
+                    "type": "string",
+                    "description": "Channel names mapped to CQ1 channel numbers, e.g. 'Mito=C1 Alexa=C2 Cyto=C3 ER=C4 DNA=C5'.",
+                    "help_text": "Names must match the channel names in --cppipe_path and include every channel in --channels. Needed only when a load_data file has to be created.",
+                    "fa_icon": "fas fa-palette"
+                },
+                "overwrite_load_data": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Replace load_data CSVs that already exist in the results bucket.",
+                    "fa_icon": "fas fa-redo"
+                },
+                "plate_columns": {
+                    "type": "integer",
+                    "description": "Number of plate columns used to turn CQ1 well indices into well names.",
+                    "help_text": "By default read from the CQ1 plate file MP_*_<cols>x<rows>.xml next to the Image folder (24 for a 384-well plate).",
+                    "fa_icon": "fas fa-th"
                 }
             }
         },
